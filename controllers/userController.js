@@ -2,17 +2,13 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
 const generateTokens = (user) => {
-  const accessToken = jwt.sign(
-    { id: user._id },
-    process.env.JWT_ACCESS_SECRET,
-    { expiresIn: process.env.JWT_ACCESS_EXPIRY }
-  );
+  const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_ACCESS_EXPIRY,
+  });
 
-  const refreshToken = jwt.sign(
-    { id: user._id },
-    process.env.JWT_REFRESH_SECRET,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRY }
-  );
+  const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_EXPIRY,
+  });
 
   return { accessToken, refreshToken };
 };
@@ -99,11 +95,9 @@ export const refreshAccessToken = async (req, res) => {
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const accessToken = jwt.sign(
-      { id: decoded.id },
-      process.env.JWT_ACCESS_SECRET,
-      { expiresIn: process.env.JWT_ACCESS_EXPIRY }
-    );
+    const accessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_ACCESS_EXPIRY,
+    });
     res.json({ accessToken });
   } catch (err) {
     res.status(403).json({ message: "Invalid token" });
